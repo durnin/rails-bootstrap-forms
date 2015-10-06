@@ -211,4 +211,9 @@ class BootstrapFormTest < ActionView::TestCase
     expected = %{<form accept-charset="UTF-8" action="/users" class="form-horizontal" id="new_user" method="post" role="form"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div><div class="form-group has-feedback"><label class="control-label col-sm-2 required" for="user_email">Email</label><div class="col-sm-10"><input class="form-control" id="user_email" name="user[email]" type="email" value="steve@example.com" /></div></div></form>}
     assert_equal expected, bootstrap_form_for(@user, layout: :horizontal, feedback_icons: true) { |f| f.email_field :email }
   end
+
+  test "empty bootstrap form with tooltip_erros option is the same as empty bootstrap form" do
+    expected = %{<form accept-charset="UTF-8" action="/users" class="form-inline" id="new_user" method="post" role="form"><div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="&#x2713;" /></div></form>}
+    assert_equal expected, bootstrap_form_for(@user, layout: :inline, tooltip_errors: true) { |f| nil }
+  end
 end

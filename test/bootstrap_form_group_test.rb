@@ -265,4 +265,25 @@ class BootstrapFormGroupTest < ActionView::TestCase
     expected = %{<div class="form-group has-error has-feedback"><p class="form-control-static">Bar</p><span class="help-block">can&#39;t be blank, is too short (minimum is 5 characters)</span><span class="glyphicon glyphicon-remove form-control-feedback"></span></div>}
     assert_equal expected, output
   end
+
+  test 'form_group belonging to form with tooltip_errors option renders no additional attributes when no errors' do
+    output = @tooltip_errors_builder.form_group :email do
+      %{<p class="form-control-static">Bar</p>}.html_safe
+    end
+
+    expected = %{<div class="form-group"><p class="form-control-static">Bar</p></div>}
+    assert_equal expected, output
+  end
+
+  test 'form_group belonging to form with tooltip_errors option renders the tooltip attributes correctly on fields with errors' do
+    @user.email = nil
+    @user.valid?
+
+    output = @tooltip_errors_builder.form_group :email do
+      %{<p class="form-control-static">Bar</p>}.html_safe
+    end
+
+    expected = %{<div class="form-group has-error rails-bootstrap-forms-error-tooltip" data-placement="bottom" data-toggle="tooltip" title="can&#39;t be blank, is too short (minimum is 5 characters)"><p class="form-control-static">Bar</p><span class="help-block">can&#39;t be blank, is too short (minimum is 5 characters)</span></div>}
+    assert_equal expected, output
+  end
 end

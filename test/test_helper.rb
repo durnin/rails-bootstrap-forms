@@ -17,5 +17,6 @@ def setup_test_fixture
   @builder = BootstrapForm::FormBuilder.new(:user, @user, self, {})
   @horizontal_builder = BootstrapForm::FormBuilder.new(:user, @user, self, { layout: :horizontal, label_col: "col-sm-2", control_col: "col-sm-10" })
   @feedback_icons_builder = BootstrapForm::FormBuilder.new(:user, @user, self, {feedback_icons: "true"})
+  @tooltip_errors_builder = BootstrapForm::FormBuilder.new(:user, @user, self, {tooltip_errors: "bottom"})
   I18n.backend.store_translations(:en, {activerecord: {help: {user: {password: "A good password should be at least six characters long"}}}})
 end
