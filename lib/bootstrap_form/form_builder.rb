@@ -212,6 +212,7 @@ module BootstrapForm
       fields_options[:inline_errors] ||= options[:inline_errors]
       fields_options[:label_errors] ||= options[:label_errors]
       fields_options[:feedback_icons] ||= options[:feedback_icons]
+      fields_options[:tooltip_errors] ||= options[:tooltip_errors]
       fields_for_without_bootstrap(record_name, record_object, fields_options, &block)
     end
 
