@@ -4,7 +4,7 @@ module BootstrapForm
   class FormBuilder < ActionView::Helpers::FormBuilder
     include BootstrapForm::Helpers::Bootstrap
 
-    attr_reader :layout, :label_col, :control_col, :has_error, :inline_errors, :label_errors, :acts_like_form_tag, :feedback_icons
+    attr_reader :layout, :label_col, :control_col, :has_error, :inline_errors, :label_errors, :acts_like_form_tag, :feedback_icons, :tooltip_errors
 
     FIELD_HELPERS = %w{color_field date_field datetime_field datetime_local_field
       email_field month_field number_field password_field phone_field
@@ -25,6 +25,7 @@ module BootstrapForm
       else
         options[:inline_errors] != false
       end
+      @tooltip_errors = options[:tooltip_errors] || false
       @acts_like_form_tag = options[:acts_like_form_tag]
       @feedback_icons = options[:feedback_icons] || false
 
@@ -182,6 +183,7 @@ module BootstrapForm
       options[:class] << " #{error_class}" if has_error?(name)
       options[:class] << " #{success_class}" if has_success?(name)
       options[:class] << " #{feedback_class}" if options[:icon] || feedback_icons
+      add_tooltip_error_to_options(name, options) if tooltip_errors && has_error?(name)
 
       content_tag(:div, options.except(:id, :label, :help, :icon, :label_col, :control_col, :layout)) do
         label = generate_label(options[:id], name, options[:label], options[:label_col], options[:layout]) if options[:label]
@@ -259,6 +261,22 @@ module BootstrapForm
 
     def feedback_class
       "has-feedback"
+    end
+
+    def tooltip_class
+      "rails-bootstrap-forms-error-tooltip"
+    end
+
+    def add_tooltip_error_to_options(name, options)
+      options[:class] << " #{tooltip_class}"
+      errors_text = get_error_messages(name)
+      return if errors_text === false
+
+      errors_text ||= get_help_text_by_i18n_key(name)
+      options[:title] = errors_text
+      options[:data] = Hash.new
+      options[:data][:toggle] = 'tooltip'
+      options[:data][:placement] = tooltip_errors if %w(top bottom right left).include? tooltip_errors
     end
 
     def control_specific_class(method)

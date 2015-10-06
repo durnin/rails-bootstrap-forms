@@ -8,3 +8,19 @@
 .rails-bootstrap-forms-error-summary {
   margin-top: 10px;
 }
+.rails-bootstrap-forms-error-tooltip + .tooltip > .tooltip-inner {
+  background-color: #d9534f;
+}
+.rails-bootstrap-forms-error-tooltip + .tooltip.top > .tooltip-arrow {
+  border-top-color: #d9534f;
+}
+.rails-bootstrap-forms-error-tooltip + .tooltip.bottom > .tooltip-arrow {
+  border-bottom-color: #d9534f;
+}
+.rails-bootstrap-forms-error-tooltip + .tooltip.left > .tooltip-arrow {
+  border-left-color: #d9534f;
+}
+.rails-bootstrap-forms-error-tooltip + .tooltip.right > .tooltip-arrow {
+  border-right-color: #d9534f;
+}
+
