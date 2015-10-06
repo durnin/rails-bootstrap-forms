@@ -252,5 +252,17 @@ class BootstrapFormGroupTest < ActionView::TestCase
 
     expected = %{<div class="form-group"><div class="col-sm-9 col-sm-offset-3"><p class="form-control-static">Bar</p></div></div>}
     assert_equal expected, output
-  end    
+  end
+
+  test 'form_group belonging to feedback_icons form renders the "error" class correctly when object is invalid' do
+    @user.email = nil
+    @user.valid?
+
+    output = @feedback_icons_builder.form_group :email do
+      %{<p class="form-control-static">Bar</p>}.html_safe
+    end
+
+    expected = %{<div class="form-group has-error has-feedback"><p class="form-control-static">Bar</p><span class="help-block">can&#39;t be blank, is too short (minimum is 5 characters)</span><span class="glyphicon glyphicon-remove form-control-feedback"></span></div>}
+    assert_equal expected, output
+  end
 end
