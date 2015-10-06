@@ -4,7 +4,7 @@ module BootstrapForm
   class FormBuilder < ActionView::Helpers::FormBuilder
     include BootstrapForm::Helpers::Bootstrap
 
-    attr_reader :layout, :label_col, :control_col, :has_error, :inline_errors, :label_errors, :acts_like_form_tag
+    attr_reader :layout, :label_col, :control_col, :has_error, :inline_errors, :label_errors, :acts_like_form_tag, :feedback_icons
 
     FIELD_HELPERS = %w{color_field date_field datetime_field datetime_local_field
       email_field month_field number_field password_field phone_field
@@ -26,6 +26,7 @@ module BootstrapForm
         options[:inline_errors] != false
       end
       @acts_like_form_tag = options[:acts_like_form_tag]
+      @feedback_icons = options[:feedback_icons] || false
 
       super
     end
@@ -179,13 +180,14 @@ module BootstrapForm
 
       options[:class] = ["form-group", options[:class]].compact.join(' ')
       options[:class] << " #{error_class}" if has_error?(name)
-      options[:class] << " #{feedback_class}" if options[:icon]
+      options[:class] << " #{success_class}" if has_success?(name)
+      options[:class] << " #{feedback_class}" if options[:icon] || feedback_icons
 
       content_tag(:div, options.except(:id, :label, :help, :icon, :label_col, :control_col, :layout)) do
         label = generate_label(options[:id], name, options[:label], options[:label_col], options[:layout]) if options[:label]
         control = capture(&block).to_s
         control.concat(generate_help(name, options[:help]).to_s)
-        control.concat(generate_icon(options[:icon])) if options[:icon]
+        control.concat(generate_icon(name, options[:icon]).to_s)
 
         if get_group_layout(options[:layout]) == :horizontal
           control_class = (options[:control_col] || control_col.clone)
@@ -207,6 +209,7 @@ module BootstrapForm
       fields_options[:control_col] ||= options[:control_col]
       fields_options[:inline_errors] ||= options[:inline_errors]
       fields_options[:label_errors] ||= options[:label_errors]
+      fields_options[:feedback_icons] ||= options[:feedback_icons]
       fields_for_without_bootstrap(record_name, record_object, fields_options, &block)
     end
 
@@ -250,6 +253,10 @@ module BootstrapForm
       "has-error"
     end
 
+    def success_class
+      "has-success"
+    end
+
     def feedback_class
       "has-feedback"
     end
@@ -258,8 +265,20 @@ module BootstrapForm
       "rails-bootstrap-forms-#{method.gsub(/_/, "-")}"
     end
 
+    def error_icon
+      "remove"
+    end
+
+    def success_icon
+      "ok"
+    end
+
     def has_error?(name)
       object.respond_to?(:errors) && !(name.nil? || object.errors[name].empty?)
+    end
+
+    def has_success?(name)
+      object.respond_to?(:errors) && !object.errors.empty? && !name.nil? && object.errors[name].empty?
     end
 
     def required_attribute?(obj, attribute)
@@ -365,8 +384,14 @@ module BootstrapForm
       content_tag(:span, help_text, class: 'help-block') if help_text.present?
     end
 
-    def generate_icon(icon)
-      content_tag(:span, "", class: "glyphicon glyphicon-#{icon} form-control-feedback")
+    def generate_icon(name, icon)
+      ikon = icon
+      if feedback_icons
+        ikon ||= error_icon if has_error?(name)
+        ikon ||= success_icon if has_success?(name)
+      end
+      return if ikon.to_s.empty?
+      content_tag(:span, "", class: "glyphicon glyphicon-#{ikon} form-control-feedback")
     end
 
     def get_error_messages(name)
