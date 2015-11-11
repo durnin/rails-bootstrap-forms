@@ -182,7 +182,7 @@ module BootstrapForm
       options[:class] = ["form-group", options[:class]].compact.join(' ')
       options[:class] << " #{error_class}" if has_error?(name)
       options[:class] << " #{success_class}" if has_success?(name)
-      options[:class] << " #{feedback_class}" if options[:icon] || feedback_icons
+      options[:class] << " #{feedback_class}" if options[:icon] || (feedback_icons && (has_error?(name) || has_success?(name)))
       add_tooltip_error_to_options(name, options) if tooltip_errors && has_error?(name)
 
       content_tag(:div, options.except(:id, :label, :help, :icon, :label_col, :control_col, :layout)) do
